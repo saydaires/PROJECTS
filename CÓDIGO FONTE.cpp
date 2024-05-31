@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+void cadastrarProduto();
+void relatorioEstoque();
+char *converterMaiusculo(char *string);
+int fecharPrograma = 0;
+
+//Configurações do Banco de Dados 
+FILE *arquivo;
+
+int menuInicial() {
+	int opcao;
+	printf("\tPROGRAMA CADASTRAR PRODUTOS\n\n");
+	printf("SELECIONE OPCAO:\n\n");
+	printf("1 -> CADASTRAR NOVO PRODUTO\n");
+	printf("2-> RELATORIO DE ESTOQUE\n0 -> SAIR\n\nINSIRA OPCAO --> ");
+	scanf("%d", &opcao);
+	return opcao;
+}
+
+void pausarExecucao() {
+	printf("PRESSIONE <ENTER> PARA CONTINUAR");
+	getchar();
+	fflush(stdin);
+	system("cls");
+}
+
+void processarOpcao(int opcao) {
+	switch(opcao)
+	{
+		case 0:
+			fecharPrograma = 1;
+			printf("FECHANDO PROGRAMA...\n");
+			pausarExecucao();
+		break;	
+		case 1:
+			arquivo = fopen("Banco_De_Dados.txt", "a");
+			cadastrarProduto();
+			fclose(arquivo);
+			break;
+		case 2:
+			arquivo = fopen("Banco_De_Dados.txt", "r");
+			if(arquivo == NULL)
+			{
+				printf("BANCO DE DADOS NAO CONSTA REGISTROS!\n");
+				fclose(arquivo);
+				pausarExecucao();
+			}
+			else
+				relatorioEstoque();
+				fclose(arquivo);
+			break;
+		default:
+			printf("OPCAO INVALIDA!\n");
+			pausarExecucao();		
+	}
+}
+
+void cadastrarProduto() {
+	char nome[50];
+	int qtd_estoque;
+	float preco;
+	
+	printf("NOME: ");
+	gets(nome);
+	printf("QTD ESTOQUE: ");
+	scanf("%d", &qtd_estoque);
+	printf("PRECO/UNIDADE: R$ ");
+	scanf("%f", &preco);
+	fprintf(arquivo, "%s %d %.2f\n", nome, qtd_estoque, preco);
+	fflush(stdin);
+	printf("PRODUTO CADASTRADO COM SUCESSO!\n");
+	pausarExecucao();
+}
+
+void relatorioEstoque() {
+	char nome[50];
+	int qtd_estoque;
+	float preco;
+	printf("\tRELATORIO DE ESTOQUE\n\n");
+	while(fscanf(arquivo, "%s %d %f", nome, &qtd_estoque, &preco)==3)
+	{
+		printf("NOME PRODUTO: %s\n", converterMaiusculo(nome));
+		printf("VALOR TOTAL DE ESTOQUE: R$ %.2f\n\n", qtd_estoque * preco);
+	}
+	pausarExecucao();
+}
+
+char *converterMaiusculo(char *string) {
+	char *ptr = string;
+	while(*string != '\0')
+	{
+		*string = toupper(*string);
+		string++;
+	}
+	return ptr;
+}
+
+int main() {
+	do
+	{
+		int opcaoInicial = menuInicial();
+		fflush(stdin);
+		system("cls");
+		processarOpcao(opcaoInicial);
+		system("cls");
+	
+	}while(fecharPrograma != 1);
+}
