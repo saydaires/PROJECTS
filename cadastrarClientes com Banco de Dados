@@ -6,7 +6,7 @@ void relatorioEstoque();
 char *converterMaiusculo(char *string);
 int fecharPrograma = 0;
 
-//Configurações do Banco de Dados 
+//ConfiguraÃ§Ãµes do Banco de Dados 
 FILE *arquivo;
 
 int menuInicial() {
